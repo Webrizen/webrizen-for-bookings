@@ -1,3 +1,5 @@
+'use client';
+
 import { VenueForm } from "@/components/admin/VenueForm";
 import withAdminAuth from "@/components/auth/withAdminAuth";
 

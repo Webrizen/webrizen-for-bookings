@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from 'next/link';
 import { Toaster, toast } from 'sonner';
 
@@ -77,7 +78,36 @@ function VenuesPage() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">Manage Venues</h1>
+          <Button disabled>Add New Venue</Button>
+        </div>
+        <div className="border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>City</TableHead>
+                <TableHead>Capacity</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[...Array(5)].map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell><Skeleton className="h-4 w-3/4" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-1/2" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-1/4" /></TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-8 w-20" /></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    );
   }
 
   if (error && venues.length === 0) {

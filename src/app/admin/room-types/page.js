@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from 'next/link';
 import { Toaster, toast } from 'sonner';
 
@@ -33,6 +34,7 @@ function RoomTypesPage() {
   const { token } = useAuth();
 
   const fetchRoomTypes = useCallback(async () => {
+    if (!token) return;
     setLoading(true);
     try {
       const response = await fetch('/api/admin/room-types', {
@@ -44,7 +46,7 @@ function RoomTypesPage() {
         throw new Error('Failed to fetch room types');
       }
       const data = await response.json();
-      setRoomTypes(data.data);
+      setRoomTypes(data.data || []);
     } catch (err) {
       setError(err.message);
       toast.error(err.message);
@@ -54,10 +56,8 @@ function RoomTypesPage() {
   }, [token]);
 
   useEffect(() => {
-    if (token) {
-      fetchRoomTypes();
-    }
-  }, [token, fetchRoomTypes]);
+    fetchRoomTypes();
+  }, [fetchRoomTypes]);
 
   const handleDelete = async (id) => {
     try {
@@ -78,7 +78,34 @@ function RoomTypesPage() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">Manage Room Types</h1>
+          <Button disabled>Add New Room Type</Button>
+        </div>
+        <div className="border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Price (INR)</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[...Array(5)].map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell><Skeleton className="h-4 w-3/4" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-1/4" /></TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-8 w-20" /></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    );
   }
 
   if (error && roomTypes.length === 0) {

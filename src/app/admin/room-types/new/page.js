@@ -1,3 +1,5 @@
+'use client';
+
 import { RoomTypeForm } from "@/components/admin/RoomTypeForm";
 import withAdminAuth from "@/components/auth/withAdminAuth";
 
