@@ -5,10 +5,13 @@ import { useAuth } from '@/context/AuthContext';
 import withAdminAuth from '@/components/auth/withAdminAuth';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Terminal } from "lucide-react";
 
 function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -22,12 +25,12 @@ function AdminDashboard() {
           },
         });
         if (!response.ok) {
-          throw new Error('Failed to fetch stats');
+          throw new Error('Failed to fetch dashboard stats');
         }
         const data = await response.json();
         setStats(data.data);
       } catch (err) {
-        console.error(err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -46,6 +49,18 @@ function AdminDashboard() {
           <Card><CardHeader><Skeleton className="h-4 w-3/4" /></CardHeader><CardContent><Skeleton className="h-8 w-1/2" /></CardContent></Card>
         </div>
       </div>
+    )
+  }
+
+  if (error) {
+    return (
+       <Alert variant="destructive">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
     )
   }
 

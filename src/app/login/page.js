@@ -14,30 +14,34 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Toaster, toast } from 'sonner';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
     try {
-      await login(email, password);
-      router.push("/admin"); // Redirect to admin dashboard
+      const user = await login(email, password);
+      if (user) {
+        toast.success("Login successful!");
+        router.push(user.role === 'admin' ? "/admin" : "/dashboard"); // Redirect based on role
+      }
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
+    <>
+    <Toaster />
     <div className="flex items-center justify-center min-h-screen">
       <Card className="w-full max-w-sm">
         <form onSubmit={handleSubmit}>
@@ -57,6 +61,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
               />
             </div>
             <div className="grid gap-2">
@@ -67,9 +72,9 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
               />
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={loading}>
@@ -79,5 +84,6 @@ export default function LoginPage() {
         </form>
       </Card>
     </div>
+    </>
   );
 }

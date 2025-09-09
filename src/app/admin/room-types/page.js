@@ -38,13 +38,9 @@ function RoomTypesPage() {
     setLoading(true);
     try {
       const response = await fetch('/api/admin/room-types', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
       });
-      if (!response.ok) {
-        throw new Error('Failed to fetch room types');
-      }
+      if (!response.ok) throw new Error('Failed to fetch room types');
       const data = await response.json();
       setRoomTypes(data.data || []);
     } catch (err) {
@@ -77,6 +73,18 @@ function RoomTypesPage() {
     }
   };
 
+  const renderEmptyState = () => (
+    <div className="text-center py-12">
+        <h3 className="text-xl font-semibold">No Room Types Found</h3>
+        <p className="text-muted-foreground mt-2 mb-4">
+            Get started by adding your first room type.
+        </p>
+        <Button asChild>
+          <Link href="/admin/room-types/new">Add New Room Type</Link>
+        </Button>
+    </div>
+  );
+
   if (loading) {
     return (
       <div>
@@ -108,7 +116,7 @@ function RoomTypesPage() {
     );
   }
 
-  if (error && roomTypes.length === 0) {
+  if (error) {
     return <div>Error: {error}</div>;
   }
 
@@ -121,49 +129,51 @@ function RoomTypesPage() {
           <Link href="/admin/room-types/new">Add New Room Type</Link>
         </Button>
       </div>
-      <div className="border rounded-md">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Price (INR)</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {roomTypes.map((rt) => (
-              <TableRow key={rt._id}>
-                <TableCell className="font-medium">{rt.name}</TableCell>
-                <TableCell>{rt.price}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="outline" size="sm" asChild className="mr-2">
-                    <Link href={`/admin/room-types/${rt._id}/edit`}>Edit</Link>
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="sm">Delete</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the room type.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(rt._id)}>
-                          Continue
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </TableCell>
+      {roomTypes.length === 0 ? renderEmptyState() : (
+        <div className="border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Price (INR)</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {roomTypes.map((rt) => (
+                <TableRow key={rt._id}>
+                  <TableCell className="font-medium">{rt.name}</TableCell>
+                  <TableCell>{rt.price}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="outline" size="sm" asChild className="mr-2">
+                      <Link href={`/admin/room-types/${rt._id}/edit`}>Edit</Link>
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">Delete</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the room type.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(rt._id)}>
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }

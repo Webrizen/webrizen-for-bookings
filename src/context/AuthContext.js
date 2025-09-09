@@ -41,7 +41,9 @@ export const AuthProvider = ({ children }) => {
             setToken(data.token);
             localStorage.setItem('token', data.token);
             const decoded = jwtDecode(data.token);
-            setUser({ id: decoded.id, role: decoded.role });
+            const userData = { id: decoded.id, role: decoded.role };
+            setUser(userData);
+            return userData;
         } else {
             throw new Error(data.message || 'Failed to login');
         }
